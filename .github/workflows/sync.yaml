@@ -1,0 +1,42 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+env:
+  ODF_UPSTREAM_REPO: "github.com/red-hat-storage/odf-operator"
+  OCS_UPSTREAM_REPO: "github.com/red-hat-storage/odf-operator"
+
+
+jobs:
+  sync:
+    name: Sync Upstream
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.WORKFLOW_TOKEN }}
+
+      - name: Create branches for the different ODF releases
+        run: |
+          # Get the list of available ODF branches
+          git remote add upstream https://${ODF_UPSTREAM_REPO}
+          git fetch upstream
+          git branch -r | grep 'upstream/release-[0-9]\.[0-9]\+$' | grep -v HEAD | while read line; do if [[ -z $(git ls-remote --heads origin "${line#upstream/}") ]]; then \
+               git checkout -b "${line#upstream/}";\
+               git submodule set-branch -b "${line#upstream/}" odf-operator;\
+               git submodule set-branch -b "${line#upstream/}" ocs-operator;\
+               git submodule update --remote odf-operator;\
+               git submodule update --remote ocs-operator;\
+               git add .gitmodules;\
+               git add odf-operator;\
+               git add ocs-operator;\
+               git commit -m "Init ODF and OCS submodules";\
+               git push --set-upstream origin "${line#upstream/}";\
+           fi; done
+          git remote remove upstream
