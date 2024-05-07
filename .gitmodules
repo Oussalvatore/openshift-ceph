@@ -1,0 +1,6 @@
+[submodule "odf-operator"]
+	path = odf-operator
+	url = https://github.com/red-hat-storage/odf-operator
+[submodule "ocs-operator"]
+	path = ocs-operator
+	url = https://github.com/red-hat-storage/ocs-operator
