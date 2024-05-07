@@ -22,7 +22,7 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.WORKFLOW_TOKEN }}
 
-      - name: Create branches for the different ODF releases
+      - name: Create branches for the new ODF releases
         run: |
           # Set git config
           git config --global user.name "GitHub Actions"
@@ -47,3 +47,23 @@ jobs:
                git push --set-upstream origin "${line#upstream/}";\
            fi; done
           git remote remove upstream
+          
+
+      - name: Update existing branches
+        run: |
+          # Set git config
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "41898282+github-actions@users.noreply.github.com"
+          git config --global checkout.defaultRemote "origin"
+          git submodule update --init;\
+          # Fetch all remote branches
+          git fetch origin
+          git branch -r | grep 'origin/release-[0-9]\.[0-9]\+$' | grep -v HEAD | while read line; do if [[ -z $(git ls-remote --heads origin "${line#origin/}") ]]; then \
+              git checkout -b "${line#upstream/}";\
+              git branch -u "${line}";\
+              git reset --hard "${line}"
+              git submodule update --remote;\
+              git add .;\
+              git commit -m 'Syncing submodules with upstream';\
+              git push;\
+           fi; done
