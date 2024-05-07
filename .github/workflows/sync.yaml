@@ -38,12 +38,12 @@ jobs:
                git submodule set-branch -b "${line#upstream/}" odf-operator;\
                git submodule set-branch -b "${line#upstream/}" ocs-operator;\
                git add .gitmodules;\
-               git commit -m "Set the branch for ODF and OCS submodules";\
+               git commit -m 'Set the branch for ODF and OCS submodules';\
                git submodule update --remote odf-operator;\
                git submodule update --remote ocs-operator;\
                git add odf-operator;\
                git add ocs-operator;\
-               git commit -m "d";\
+               git commit -m 'Init ODF and OCS submodules';\
                git push --set-upstream origin "${line#upstream/}";\
            fi; done
           git remote remove upstream
