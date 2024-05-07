@@ -10,7 +10,6 @@ jobs:
         fetch-depth: 0
 
     - name: Init submodules
-      env:
       run: |
         # Init ODF and OCS submodules
         git config --global user.name "GitHub Actions"
