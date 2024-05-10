@@ -8,7 +8,7 @@ on:
 env:
   ODF_UPSTREAM_REPO: "github.com/red-hat-storage/odf-operator"
   OCS_UPSTREAM_REPO: "github.com/red-hat-storage/odf-operator"
-  UPSTREAM_BRANCHES: "main 4.14 4.15 4.16"
+  UPSTREAM_BRANCHES: "4.14 4.15 4.16"
 
 jobs:
   sync:
@@ -33,17 +33,19 @@ jobs:
           # Get the list of available ODF branches
           for branch in $UPSTREAM_BRANCHES;\
             do\
-               git checkout -b "$branch";\
-               git submodule set-branch -b $branch odf-operator;\
-               git submodule set-branch -b $branch ocs-operator;\
-               git add .gitmodules;\
-               git commit -m 'Set the branch for ODF and OCS submodules';\
-               git submodule update --remote odf-operator;\
-               git submodule update --remote ocs-operator;\
-               git add odf-operator;\
-               git add ocs-operator;\
-               git commit -m 'Init ODF and OCS submodules';\
-               git push --set-upstream origin $branch;\
+               if [[ -z $(git ls-remote --heads origin "$branch") ]]; then\
+                 git checkout -b "$branch";\
+                 git submodule set-branch -b $branch odf-operator;\
+                 git submodule set-branch -b $branch ocs-operator;\
+                 git add .gitmodules;\
+                 git commit -m 'Set the branch for ODF and OCS submodules';\
+                 git submodule update --remote odf-operator;\
+                 git submodule update --remote ocs-operator;\
+                 git add odf-operator;\
+                 git add ocs-operator;\
+                 git commit -m 'Init ODF and OCS submodules';\
+                 git push --set-upstream origin $branch;\
+               fi;\
             done\
 
       - name: Update existing branches
@@ -55,12 +57,15 @@ jobs:
           git submodule update --init;\
           # Fetch all remote branches
           git fetch origin
-          git branch -r | grep 'origin/release-[0-9]\.[0-9]\+$' | grep -v HEAD | while read line; do if [[ -z $(git ls-remote --heads origin "${line#origin/}") ]]; then \
-              git checkout -b "${line#origin/}";\
-              git branch -u "${line}";\
-              git reset --hard "${line}"
-              git submodule update --remote;\
-              git add .;\
-              git commit -m 'Syncing submodules with upstream';\
-              git push;\
-           fi; done
+          for branch in $UPSTREAM_BRANCHES;\
+            do\
+               if [[ -n $(git ls-remote --heads origin "$branch") ]]; then\
+                  git checkout -b "$branch";\
+                  git branch -u "origin/$branch";\
+                  git reset --hard "origin/$branch"
+                  git submodule update --remote;\
+                  git add .;\
+                  git commit -m 'Syncing submodules with upstream';\
+                  git push;\
+               fi;\
+            done\
