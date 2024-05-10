@@ -1,8 +1,8 @@
 [submodule "odf-operator"]
 	path = odf-operator
 	url = https://github.com/red-hat-storage/odf-operator
-	branch = release-4.15
+	branch = release-4.16
 [submodule "ocs-operator"]
 	path = ocs-operator
 	url = https://github.com/red-hat-storage/ocs-operator
-	branch = release-4.15
+	branch = release-4.16
