@@ -43,8 +43,8 @@ jobs:
                git add odf-operator;\
                git add ocs-operator;\
                git commit -m 'Init ODF and OCS submodules';\
-               git push --set-upstream origin $branch\
-            done\          
+               git push --set-upstream origin $branch;\
+            done\
 
       - name: Update existing branches
         run: |
