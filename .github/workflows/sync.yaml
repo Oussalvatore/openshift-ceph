@@ -60,7 +60,7 @@ jobs:
           for branch in $UPSTREAM_BRANCHES;\
             do\
                if [[ -n $(git ls-remote --heads origin "$branch") ]]; then\
-                  git checkout -b "$branch";\
+                  git checkout "$branch" || git checkout -b "$branch";\
                   git branch -u "origin/$branch";\
                   git reset --hard "origin/$branch"
                   git submodule update --remote;\
