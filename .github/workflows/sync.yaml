@@ -34,8 +34,8 @@ jobs:
           for branch in $UPSTREAM_BRANCHES;\
             do\
                git checkout -b "$branch";\
-               git submodule set-branch -b "$branch" odf-operator;\
-               git submodule set-branch -b "$branch" ocs-operator;\
+               git submodule set-branch -b $branch odf-operator;\
+               git submodule set-branch -b $branch ocs-operator;\
                git add .gitmodules;\
                git commit -m 'Set the branch for ODF and OCS submodules';\
                git submodule update --remote odf-operator;\
@@ -43,7 +43,7 @@ jobs:
                git add odf-operator;\
                git add ocs-operator;\
                git commit -m 'Init ODF and OCS submodules';\
-               git push --set-upstream origin "$branch";\
+               git push --set-upstream origin $branch;\
             done\          
 
       - name: Update existing branches
